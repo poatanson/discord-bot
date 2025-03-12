@@ -1,22 +1,22 @@
 import discord
+import os 
+from discord.ext import commands
+from dotenv import load_dotenv
 
+load_dotenv() # load all the variables from the env file
 intents = discord.Intents.default()
-intents.message_content = True
+bot = commands.Bot(command_prefix="/", intents=intents)
 
-client = discord.Client(intents=intents)
-
-DISCORD_BOT_KEY = 'MTM0OTM0MDgxNTIwNTMzOTE0Ng.GsV_V1.sXeQ35gagQNFe210sE_pHaPFva2UNRBmdtDZqQ'
-
-@client.event
+@bot.event
 async def on_ready():
-    print(f'We have logged in as {client.user}')
+    print(f"{bot.user} is ready and online!")
 
-@client.event
-async def on_message(message):
-    if message.author == client.user:
-        return
+@bot.slash_command(name="hello", description="Say hello to the bot")
+async def hello(ctx: discord.ApplicationContext):
+    await ctx.respond("Hey!")
 
-    if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
+@bot.slash_command(name="ping", description="Sends the bot's latency.")
+async def ping(ctx: discord.ApplicationContext): 
+    await ctx.respond(f"Pong! Latency is {bot.latency}")
 
-client.run(DISCORD_BOT_KEY)
+bot.run(os.getenv('TOKEN')) # run the bot with the token
